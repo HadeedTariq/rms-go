@@ -22,6 +22,7 @@ func main() {
 	})
 	api := r.Group("/api")
 	routes.UserRoutes(api)
+	routes.MenuRoutes(api)
 
 	// Start the server on port 8080
 	if err := r.Run(":8080"); err != nil {

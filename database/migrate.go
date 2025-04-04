@@ -10,7 +10,7 @@ func MigrateTables() {
 		log.Fatal("Database connection is not initialized")
 	}
 
-	err := DB.AutoMigrate(&models.User{})
+	err := DB.AutoMigrate(&models.User{}, &models.MenuCategory{}, &models.MenuItem{})
 	if err != nil {
 		log.Fatal("Failed to migrate database tables:", err)
 	}

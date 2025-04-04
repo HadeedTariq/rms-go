@@ -32,6 +32,7 @@ func GenerateTokens(existingUser models.User) (string, string, error) {
 		"user_id":   existingUser.ID,
 		"user_name": existingUser.Username,
 		"email":     existingUser.Email,
+		"role":      existingUser.Role,
 		"exp":       time.Now().Add(time.Minute * 15).Unix(),
 	}
 

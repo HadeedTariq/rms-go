@@ -61,3 +61,40 @@ func CreateUser(c *gin.Context) {
 		},
 	})
 }
+
+func LoginUser(c *gin.Context) {
+	var user models.User
+
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input, please check the provided data."})
+		return
+	}
+
+	if user.Email == "" || user.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email and password are required."})
+		return
+	}
+
+	var existingUser models.User
+	if err := database.DB.Where("email = ?", user.Email).First(&existingUser).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password."})
+		return
+	}
+
+	if !utils.CheckPasswordHash(user.Password, existingUser.Password) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password."})
+		return
+	}
+
+	accessToken, refreshToken, err := utils.GenerateTokens(existingUser)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token, please try again later."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":       "Login successful",
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+	})
+}
